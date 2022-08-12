@@ -6,7 +6,7 @@
 
 #define N 5
 #define right ph
-#define left(ph % N) + 1
+#define left (ph % N) + 1
 sem_t chopstick[5];
 pthread_t T[N];
 void * philo(void * );
