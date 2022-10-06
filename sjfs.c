@@ -2,35 +2,40 @@
 #include<string.h>
 
 void getData();
+void sjfs();
 void calculate();
 void display();
-void sjfs();
-int bt[20], wt[20], et[20], twt = 0, temp1, temp2, n, ttt = 0, tt[20];
+
+int burstTime[20], waitingTime[20], exitTime[20], turnAroundTime[20];
+int totalWaitingTime, totalTurnAroundTime, n, temp1;
 char pName[20][20], temp[20];
-float awt, att;
+float averageWaitingTime, averageTurnAroundTime;
+
 void main() {
     getData();
     sjfs();
     calculate();
     display();
 }
+
 void getData() {
-    printf("Enter the no of process :");
-    scanf("%d", & n);
-    for (int i = 1; i <= n; i++) {
+    printf("Enter the no Process: ");
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
         printf("\nEnter the Process Name: ");
-        scanf("%s", & pName[i]);
-        printf("Enter the Burst Time: ");
-        scanf("%d", & bt[i]);
+        scanf("%s", &pName[i]);
+        printf("Enter the BurstTime: ");
+        scanf("%d", &burstTime[i]);
     }
 }
+
 void sjfs() {
-    for (int i = 1; i <= n; i++) {
-        for (int j = i + 1; j <= n; j++) {
-            if (bt[i] > bt[j]) {
-                temp2 = bt[i];
-                bt[i] = bt[j];
-                bt[j] = temp2;
+    for(int i = 0; i < n; i++) {
+        for(int j = i + 1; j <=n; j++ ) {
+            if(burstTime[i] > burstTime[j]) {
+                temp1 = burstTime[i];
+                burstTime[i] = burstTime[j];
+                burstTime[j] = temp1;
                 strcpy(temp, pName[i]);
                 strcpy(pName[i], pName[j]);
                 strcpy(pName[j], temp);
@@ -39,32 +44,30 @@ void sjfs() {
     }
 }
 void calculate() {
-    wt[1] = 0;
-    tt[1] = 0;
-    tt[1] = bt[1];
-    et[1] = bt[1];
-    et[1] = bt[1];
-    ttt = tt[1];
-    twt = wt[1];
-    for (int i = 2; i <= n; i++) {
-        wt[i] = et[i - 1];
-        tt[i] = wt[i] + bt[i];
-        et[i] = et[i - 1] + bt[i];
-        twt = twt + wt[i];
-        ttt = ttt + tt[i];
+    waitingTime[0] = 0;
+    turnAroundTime[0] = burstTime[0] + waitingTime[0];
+    exitTime[0] = burstTime[0];
+    totalTurnAroundTime = turnAroundTime[0];
+    totalWaitingTime = waitingTime[0];
+    for(int i = 1; i <= n; i++) {
+        waitingTime[i] = exitTime[i-1];
+        turnAroundTime[i] = waitingTime[i] + burstTime[i];
+        exitTime[i] = exitTime[i-1] + burstTime[i];
+
+        totalTurnAroundTime = totalTurnAroundTime + turnAroundTime[i];
+        totalWaitingTime = totalWaitingTime + waitingTime[i];
     }
-    awt = (float) twt / n;
-    att = (float) ttt / n;
-    printf("\nAverage Turn around time=%3.2f ms", att);
-    printf("\nAverage Waiting Time=%3.2f ms", awt);
+    averageTurnAroundTime = (float) totalTurnAroundTime / n;
+    averageWaitingTime = (float) totalWaitingTime / n;
 }
+
 void display() {
-    printf("\n\n\t\tGANTT CHART\n");
-    for (int i = 1; i <= n; i++) printf("|\t%s\t", pName[i]);
+    printf("\nGantt Chart");
+    for(int i = 0; i <= n; i++ )
+        printf("|\t%s\t", pName[i]);
     printf("|\t\n");
     printf("\n------------------------------------------------------------\n");
     printf("\n");
-    for (int i = 0; i <= n; i++) {
-        printf("%d\t\t", et[i]);
-    }
+    for(int i = 0; i <= n; i++)
+        printf("%d\t\t", exitTime[i]);
 }
